@@ -15,9 +15,9 @@ Project is created with:
 	
 ## Setup
 To run this project:
+ * Rename .env.example to .env and set the database environment settings.   
  * Go to project directory and run below command :
 
-```
 * Run composer install 
 ```
 $ cd ../Student-Course
@@ -26,4 +26,5 @@ $ composer install
 * Run db migrate to create tables.
 ```
 $ php dbmigrate.php
+```
 
