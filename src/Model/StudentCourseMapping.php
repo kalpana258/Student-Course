@@ -15,7 +15,7 @@ class StudentCourseMapping
         try {
                 $dbInstance = DatabaseConnector::getInstance();
                 $conn = $dbInstance->getConnection();
-                $stmt = $conn->prepare("INSERT INTO student_course_mapping(`student_id`, `course_id`) VALUES(:student,:course)");
+                $stmt = $conn->prepare("INSERT INTO student_course_mapping(`reg_no`, `course_code`) VALUES(:student,:course)");
 
             for ($i=0; $i<count($request['student']); $i++) {
                 $stmt->bindValue(':student', $request['student'][$i]);
@@ -37,8 +37,8 @@ class StudentCourseMapping
               $conn = $dbInstance->getConnection();
        
                $statement = $conn ->prepare("SELECT student.fname,course.name FROM student_course_mapping as mapping inner join"
-                . " student on mapping.student_id = student.id"
-                . " inner join course on  mapping.course_id = course.id"
+                . " student on mapping.reg_no = student.reg_no"
+                . " inner join course on  mapping.course_code = course.course_code"
                 . " where student.is_delete=0 and course.is_delete=0");
         
                 $statement->execute();

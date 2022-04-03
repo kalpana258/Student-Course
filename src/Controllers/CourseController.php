@@ -5,13 +5,14 @@ namespace src\Controllers;
 use src\Model\Course;
 use src\core\Views;
 use src\core\CustomException;
+use src\core\Validator;
 
 class CourseController
 {
     
     public function __construct()
     {
-        //
+         $this->validator = new Validator();
     }
     /**
      * This method load the view for course
@@ -34,18 +35,47 @@ class CourseController
     public function createCourse()
     {
         try {
-            if (isset($_POST) && !empty($_POST)) {
+//        
+         
+         if (isset($_POST['submit'])) {
+          $this->validator->name('Course Name')->value($_POST['courseName'])
+               ->pattern([
+                   ['name'=>'required','value'=>'required'],
+                  // ['name'=>'alphanumeric','value'=>'','msg'=>"Course Name may only contain alphanumeric characters."],
+                  ]);
+       
+          $this->validator->name('Course Details')->value($_POST['courseDetails'])
+               ->pattern([
+                   ['name'=>'required','value'=>'required']
+                
+                  ]);
+             if(!empty($this->validator->getErrors())){
+                    $view = new Views('course/index.php');
+                    $view->assign('errors',$this->validator->getErrors());
+                     $view->assign('postData',$_POST);
+                    return;
+             }else{
+                $_POST['courseName'] = filter_var($_POST['courseName'], FILTER_SANITIZE_STRING);
+                $_POST['courseDetails'] = filter_var($_POST['courseName'], FILTER_SANITIZE_STRING);
+                  $_POST['courseDetails']  = filter_var($_POST['courseDetails'], FILTER_SANITIZE_SPECIAL_CHARS);
+            
                 $save = Course::add($_POST);
                 if ($save) {
-                      header('Location: /courseList');
+                     $view = new Views('course/index.php');
+                    $view->assign('success', 'Data saved successfully.');
+                    return;
                 } else {
                     $view = new Views('course/index.php');
-                    $view->assign('errors', 'Something went wrong');
+                    $view->assign('errors', 'There is issue in saving the data in Database. Please try again.');
+                    $view->assign('postData',$_POST);
+                    return ;
                 }
-            } else {
-                 $view = new Views('course/index.php');
-                 $view->assign('errors', 'Something went wrong');
-            }
+             }
+          
+         }
+           $view = new Views('course/index.php');
+         
+           return;
         } catch (CustomException $e) {
             echo   $e->customFunction();
         }

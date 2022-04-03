@@ -54,7 +54,7 @@
                 </table>
                 <br>
              <div align="right">
-                <a href="/course" id="add_button"  class="btn btn-success">Add Course</a>
+                <a href="/createCourse" id="add_button"  class="btn btn-success">Add Course</a>
        </div>     
 </div>
 </body>

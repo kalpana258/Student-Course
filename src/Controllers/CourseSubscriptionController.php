@@ -46,7 +46,7 @@ class CourseSubscriptionController
                   header('Location: /report');
             }
         } catch (CustomException $e) {
-            echo   $e->customFunction();
+            echo   $e->customFunction("Selected student already mapped to course.");
         }
     }
      /**
@@ -62,7 +62,7 @@ class CourseSubscriptionController
             $view = new Views('studentCourseMap/report.php');
             $view->assign('response', $response);
         } catch (CustomException $e) {
-            echo   $e->customFunction();
+            echo   $e->customFunction("There is some error while fetching the records");
         }
     }
 }

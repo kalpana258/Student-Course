@@ -27,7 +27,7 @@
 
             <div class="error-404-main-wrapper">
                 <div class="error-404-container col-md-4 col-sm-6 col-center">
-                    <h3> Something went wrong. </h3>
+                    <h3><?php echo   $errorMessage ?></h3>
                 </div>
             </div>
 

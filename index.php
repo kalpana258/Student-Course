@@ -47,10 +47,10 @@ route('/edit', function () {
         $controller->edit();
 });
 
-route('/course', function () {
-    $controller = new CourseController();     
-        $controller->showCourseForm();
-});
+//route('/course', function () {
+//    $controller = new CourseController();     
+//        $controller->showCourseForm();
+//});
 route('/createCourse', function () {
     $controller = new CourseController();     
         $controller->createCourse(); 

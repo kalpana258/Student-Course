@@ -55,7 +55,7 @@
                 </table>
                 <br>
           <div align="right">
-                <a href="/loadForm" id="add_button"  class="btn btn-success">Add Student</a>
+                <a href="/createStudent" id="add_button"  class="btn btn-success">Add Student</a>
        </div>    
 </div>
 </body>
@@ -103,8 +103,6 @@
 
 <script type="text/javascript">
     $(document).ready(function(){
-       // var path="<?php $_SERVER['DOCUMENT_ROOT'] . '/view/includes/'?>"
-//        $("#header").load("header.html"); 
      var dataTable = $('#student_table').DataTable({
         "paging":true,
         "processing":true,
@@ -148,7 +146,7 @@
                     $('#userModal').modal('hide');
                       dataTable.ajax.reload();
                     if(json['success']==false){
-                        alert("Error on saving.");
+                        alert(json['message']);
                     }else{
                          alert("SuccessFully saved");
                     }

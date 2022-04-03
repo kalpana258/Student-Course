@@ -32,7 +32,7 @@
       <select id="student" name="student[]" class="form-control">
         <option selected >Select Student</option>
         <?php foreach($studentdropdown as $student){ ?>
-         <option value=<?php echo $student['id'] ?>><?php echo $student['fname']?></option>
+         <option value=<?php echo $student['reg_no'] ?>><?php echo $student['fname']."( RegNo- ".$student['reg_no'].")"?></option>
         <?php } ?>
       </select>
     </div>
@@ -43,7 +43,7 @@
       <select id="course" name="course[]" class="form-control">
         <option selected>Select Course</option>
          <?php foreach($courseDropdown as $course){ ?>
-         <option value=<?php echo $course['id'] ?>><?php echo $course['name']?></option>
+         <option value=<?php echo $course['course_code'] ?>><?php echo $course['name']."( code -".$course['course_code'].")"?></option>
         <?php } ?>
       </select>
     </div>
@@ -81,7 +81,7 @@
       <select id="student" name="student[]" class="form-control">
         <option selected>Select Student</option>
         <?php foreach($studentdropdown as $student){ ?>
-        <option value=<?php echo $student['id'] ?>><?php echo $student['fname']?></option>
+        <option value=<?php echo $student['reg_no'] ?>><?php echo $student['fname']."( RegNo- ".$student['reg_no'].")" ?></option>
       <?php } ?>
       </select>
     </div>
@@ -92,7 +92,7 @@
       <select id="course" name="course[]" class="form-control">
         <option selected>Select Course</option>
    <?php foreach($courseDropdown as $course){ ?>
-       <option value=<?php echo $course['id'] ?>><?php echo $course['name']?></option>
+       <option value=<?php echo $course['course_code'] ?>><?php echo $course['name']."( code -".$course['course_code'].")"?></option>
      <?php } ?>
       </select>
     </div>

@@ -99,21 +99,29 @@ class Student
         try {
             $dbInstance = DatabaseConnector::getInstance();
             $conn = $dbInstance->getConnection();
-   //      $conn->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
-//$conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        
-            $stmt = $conn->prepare("INSERT INTO student(`fname`, `lname`, `dob`,`phone`,`created_at`,`updated_at`) VALUES(:fname,:lname,:dob,:phone,:created_at,:updated_at)");
+            // reg num generation
+            $stuRegNo = str_pad(mt_rand(1,999999),6,'0',STR_PAD_LEFT);
+            $stmt = $conn->prepare("INSERT INTO student(`fname`, `lname`,`reg_no`, `dob`,`phone`,`email`,`country_code`,`created_at`,`updated_at`) VALUES(:fname,:lname,:regno,:dob,:phone,:email,:country_code,:created_at,:updated_at)");
             $stmt->bindValue(':fname', $data['fname']??null);
             $stmt->bindValue(':lname', $data['lname']??null);
-//$stmt->bindValue(':dob',  date($data['dob'],"Y-m-d")??NULL);
+            $stmt->bindValue(':regno', $stuRegNo??null);
+            $stmt->bindValue(':email', $data['email']??null);
             $stmt->bindValue(':dob', date("Y-m-d", strtotime($data['dob']))??null);
             $stmt->bindValue(':phone', $data['contact_no']??null);
+            $stmt->bindValue(':country_code', $data['countryCode']??null);
+        //    $stmt->bindValue(':is_delete', 0);
             $stmt->bindValue(':created_at', date('Y-m-d H:i:s'));
             $stmt->bindValue(':updated_at', date('Y-m-d H:i:s'));
             $stmt->execute();
             return true;
         } catch (\Exception $exception) {
-             throw new CustomException($exception->getMessage());
+            
+             if($exception instanceof \PDOException) {
+                 throw new CustomException("Database error occured while saving.");
+             }else{
+                   throw new CustomException("There is some error while saving");
+             }
+             
         }
     }
 }

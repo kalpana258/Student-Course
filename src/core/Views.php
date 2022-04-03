@@ -30,7 +30,11 @@ class Views
 
     public function __destruct()
     {
+       // var_dump('here');
+        
         extract($this->data);
+       
         include($this->render);
+        
     }
 }

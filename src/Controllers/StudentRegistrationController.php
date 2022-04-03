@@ -4,14 +4,16 @@ namespace src\Controllers;
 
 use src\Model\Student;
 use src\core\Views;
-use src\Model\Course;
 use src\core\CustomException;
+use src\core\Validator;
+use src\Helper;
 
 class StudentRegistrationController
 {
     
     public function __construct()
     {
+        $this->validator = new Validator();
     }
  
     /**
@@ -35,20 +37,74 @@ class StudentRegistrationController
     public function createStudent()
     {
         try {
-            if (isset($_POST) && !empty($_POST)) {
+          $helper = new Helper();
+         $countryCodes = $helper->getCountryCodes();
+         
+         if (isset($_POST['submit'])) {
+          $this->validator->name('First Name')->value($_POST['fname'])
+               ->pattern([
+                   ['name'=>'alpha','value'=>'Alphabets',"msg"=>"Only Alphabets is allowed for First Name."],
+                   ['name'=>'required','value'=>'required'],
+                   ['name'=>'min','value'=>4,"msg"=>"Please enter minimum 4 chars for First Name."],
+                   ['name'=>'max','value'=>50, "msg"=>"Please enter minimum 4 chars for First Name."]
+                  ]);
+       
+          $this->validator->name('Last Name')->value($_POST['lname'])
+               ->pattern([
+                  ['name'=>'alpha','value'=>'Alphabets',"msg"=>"Only Alphabets is allowed for Last Name."],
+                   ['name'=>'required','value'=>'required'],
+                   ['name'=>'min','value'=>4,"msg"=>"Please enter minimum 4 chars for Last Name."],
+                   ['name'=>'max','value'=>50,"msg"=>"Maximum 50 chars are allowed for Last Name"],
+                  ]);
+          
+             $this->validator->name('Mobile Number')->value($_POST['contact_no'])
+               ->pattern([
+                   ['name'=>'mobile','value'=>'Mobile',"msg"=>"Please enter valid Mobile number."],
+                   ['name'=>'required','value'=>'required'],
+                   ['name'=>'min','value'=>10,"msg"=>"Please enter minimum 10 digits for Mobile No."],
+                   ['name'=>'max','value'=>10,"msg"=>"Maximum 10 digits are allowed for Mobile No."],
+                  ]);
+             $this->validator->name('Email')->value($_POST['email'])
+               ->pattern([
+                   ['name'=>'email','value'=>'Email'],
+                   ['name'=>'required','value'=>'required'],
+                  ]);
+             $this->validator->checkDate($_POST['dob']);
+             if(!empty($this->validator->getErrors())){
+                    $view = new Views('studentReg/index.php');
+                    $view->assign('errors',$this->validator->getErrors());
+                     $view->assign('postData',$_POST);
+                     $view->assign('countryCodes',$countryCodes);
+                    return;
+             }else{
+                $_POST['fname'] = filter_var($_POST['fname'], FILTER_SANITIZE_STRING);
+                $_POST['lname'] = filter_var($_POST['lname'], FILTER_SANITIZE_STRING);
+                $_POST['email'] = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
+              
                 $save = Student::add($_POST);
                 if ($save) {
-                      header('Location: /');
+                     $view = new Views('studentReg/index.php');
+                    $view->assign('success', 'Data saved successfully.');
+                     $view->assign('countryCodes',$countryCodes);
+                    return;
                 } else {
                     $view = new Views('studentReg/index.php');
-                    $view->assign('errors', 'Something went wrong');
+                    $view->assign('errors', 'There is issue in saving the data in Database. Please try again.');
+                    $view->assign('postData',$_POST);
+                    $view->assign('countryCodes',$countryCodes);
+                    return ;
                 }
-            } else {
-                 $view = new Views('studentReg/index.php');
-                 $view->assign('errors', 'Something went wrong');
-            }
+             }
+          
+         }
+           $view = new Views('studentReg/index.php');
+            $view->assign('countryCodes',$countryCodes);
+           return;
+        
         } catch (CustomException $e) {
-            echo   $e->customFunction();
+           
+            echo   $e->customFunction($e);
+          
         }
     }
     /**
@@ -105,7 +161,7 @@ class StudentRegistrationController
             Student::edit($data);
             echo  json_encode(["success"=>true]);
         } catch (CustomException $e) {
-            echo  json_encode(["success"=>false]);
+            echo  json_encode(["success"=>false,"message"=>"Database error occured while saving."]);
         }
     }
     /**

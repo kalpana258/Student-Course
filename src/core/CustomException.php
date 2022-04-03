@@ -18,11 +18,14 @@ class CustomException extends Exception
     // custom string representation of object
     public function __toString()
     {
-        return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
+       // return __CLASS__ . ": [{$this->code}]: {$this->message}\n";
+        return " {$this->message}\n";
     }
 
-    public function customFunction()
+    public function customFunction($errorMessage="")
     {
+       echo   __CLASS__ . ": [{$this->code}]: {$this->message}\n";
         $view = new Views('error/error.php');
+         $view->assign('errorMessage',$errorMessage);
     }
 }

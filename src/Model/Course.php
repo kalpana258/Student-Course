@@ -97,11 +97,12 @@ class Course
         try {
             $dbInstance = DatabaseConnector::getInstance();
             $conn = $dbInstance->getConnection();
-        
-            $stmt = $conn->prepare("INSERT INTO course(`name`, `details`, `created_at`,`updated_at`) VALUES(:name,:details,:created_at,:updated_at)");
+            $courseCode =str_pad(mt_rand(1,999),3,'0',STR_PAD_LEFT);
+            $stmt = $conn->prepare("INSERT INTO course(`name`,`course_code`, `details`, `created_at`,`updated_at`) VALUES(:name,:coursecode,:details,:created_at,:updated_at)");
             $stmt->bindValue(':name', $data['courseName']??null);
             $stmt->bindValue(':details', $data['courseDetails']??null);
-
+            $stmt->bindValue(':coursecode',$courseCode);
+ 
             $stmt->bindValue(':created_at', date('Y-m-d H:i:s'));
             $stmt->bindValue(':updated_at', date('Y-m-d H:i:s'));
             $stmt->execute();
