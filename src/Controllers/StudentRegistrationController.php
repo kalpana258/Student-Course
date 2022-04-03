@@ -14,6 +14,7 @@ class StudentRegistrationController
     public function __construct()
     {
         $this->validator = new Validator();
+        $this->student = new Student();
     }
  
     /**
@@ -81,7 +82,7 @@ class StudentRegistrationController
                 $_POST['lname'] = filter_var($_POST['lname'], FILTER_SANITIZE_STRING);
                 $_POST['email'] = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
               
-                $save = Student::add($_POST);
+                $save = $this->student->add($_POST);
                 if ($save) {
                      $view = new Views('studentReg/index.php');
                     $view->assign('success', 'Data saved successfully.');
@@ -129,7 +130,7 @@ class StudentRegistrationController
     {
         try {
             $id = $_POST['student_id'];
-            $res = Student::delete($id);
+            $res = $this->student->delete($id);
         } catch (CustomException $e) {
             echo   $e->customFunction();
         }
@@ -143,7 +144,7 @@ class StudentRegistrationController
     {
         try {
             $id = $_POST['id'];
-            $res = Student::getById($id);
+            $res = $this->student->getById($id);
             echo json_encode($res);
         } catch (CustomException $e) {
             echo   $e->customFunction();
@@ -158,7 +159,8 @@ class StudentRegistrationController
     {
         try {
             $data = $_POST;
-            Student::edit($data);
+            
+            $this->student->edit($data);
             echo  json_encode(["success"=>true]);
         } catch (CustomException $e) {
             echo  json_encode(["success"=>false,"message"=>"Database error occured while saving."]);
@@ -172,7 +174,7 @@ class StudentRegistrationController
     public function getList()
     {
         try {
-            $records = Student::get($_POST);
+            $records = $this->student->get($_POST);
             
             $data = array();
             $filtered_rows = count($records);
@@ -187,7 +189,7 @@ class StudentRegistrationController
             $output = array(
             "draw"              =>  intval($_POST["draw"]),
             "recordsTotal"      =>  $filtered_rows,
-            "recordsFiltered"   =>  count(Student::get_total_all_records()),
+            "recordsFiltered"   =>  count($this->student->get_total_all_records()),
             "data"              =>  $data
             );
             echo json_encode($output);

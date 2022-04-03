@@ -1,18 +1,21 @@
 <?php
 namespace src\Model;
 
-use src\core\DatabaseConnector;
 use src\core\CustomException;
+use src\Model\Model;
 
-class Student
+class Student extends Model
 {
-    
-    public static function edit($data)
+     public function __construct(){
+		parent::__construct();
+             
+	}
+
+    public function edit($data)
     {
         try {
-               $dbInstance = DatabaseConnector::getInstance();
-               $conn = $dbInstance->getConnection();
-               $statement = $conn->prepare("UPDATE student SET fname = :fname, lname = :lname, dob = :dob,phone = :phone,updated_at=:updated_at WHERE id = :id");
+              
+               $statement = $this->conn->prepare("UPDATE student SET fname = :fname, lname = :lname, dob = :dob,phone = :phone,updated_at=:updated_at WHERE id = :id");
                $result = $statement->execute(
                    array(
                        ':fname'   =>  $data["fname"],
@@ -28,13 +31,10 @@ class Student
         }
     }
 
-    public static function get_total_all_records()
+    public  function get_total_all_records()
     {
         try {
-             $dbInstance = DatabaseConnector::getInstance();
-               $conn = $dbInstance->getConnection();
-
-            $statement = $conn ->prepare("SELECT * FROM student where is_delete=0");
+            $statement = $this->conn->prepare("SELECT * FROM student where is_delete=0");
             $statement->execute();
             $result = $statement->fetchAll();
             return $result;
@@ -42,16 +42,14 @@ class Student
             throw new CustomException($exception->getMessage());
         }
     }
-    public static function get($request)
+    public  function get($request)
     {
         try {
             $query ="SELECT * FROM student where is_delete=0";
             if ($request["length"] != -1) {
                 $query .= ' LIMIT ' .$request['start']. ', ' .$request['length'];
             }
-            $dbInstance = DatabaseConnector::getInstance();
-            $conn = $dbInstance->getConnection();
-            $stmt = $conn->query($query);
+            $stmt =  $this->conn->query($query);
             $stmt->execute();
             $response = $stmt->fetchAll(\PDO::FETCH_ASSOC);
             return $response;
@@ -59,12 +57,11 @@ class Student
             throw new CustomException($exception->getMessage());
         }
     }
-    public static function getByID($id)
+    public  function getByID($id)
     {
         try {
-            $dbInstance = DatabaseConnector::getInstance();
-            $conn = $dbInstance->getConnection();
-            $stmt = $conn->prepare("SELECT * FROM student WHERE id =:id AND is_delete=0 LIMIT 1");
+         
+            $stmt = $this->conn->prepare("SELECT * FROM student WHERE id =:id AND is_delete=0 LIMIT 1");
             $stmt->execute(
                 array(
                 ':id'       =>  $id
@@ -77,12 +74,11 @@ class Student
             throw new CustomException($exception->getMessage());
         }
     }
-    public static function delete($id)
+    public  function delete($id)
     {
         try {
-            $dbInstance = DatabaseConnector::getInstance();
-            $conn = $dbInstance->getConnection();
-            $statement = $conn->prepare("UPDATE student SET is_delete = :delete WHERE id = :id");
+           
+            $statement = $this->conn->prepare("UPDATE student SET is_delete = :delete WHERE id = :id");
             $result = $statement->execute(
                 array(
                 ':delete'   =>  1,
@@ -94,14 +90,11 @@ class Student
         }
     }
     
-    public static function add($data)
+    public function add($data)
     {
         try {
-            $dbInstance = DatabaseConnector::getInstance();
-            $conn = $dbInstance->getConnection();
-            // reg num generation
             $stuRegNo = str_pad(mt_rand(1,999999),6,'0',STR_PAD_LEFT);
-            $stmt = $conn->prepare("INSERT INTO student(`fname`, `lname`,`reg_no`, `dob`,`phone`,`email`,`country_code`,`created_at`,`updated_at`) VALUES(:fname,:lname,:regno,:dob,:phone,:email,:country_code,:created_at,:updated_at)");
+            $stmt = $this->conn->prepare("INSERT INTO student(`fname`, `lname`,`reg_no`, `dob`,`phone`,`email`,`country_code`,`created_at`,`updated_at`) VALUES(:fname,:lname,:regno,:dob,:phone,:email,:country_code,:created_at,:updated_at)");
             $stmt->bindValue(':fname', $data['fname']??null);
             $stmt->bindValue(':lname', $data['lname']??null);
             $stmt->bindValue(':regno', $stuRegNo??null);

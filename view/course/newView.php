@@ -7,15 +7,12 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
-    <!-- datatable lib -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
  <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
 
   <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
-   <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+ 
     <style type="text/css">
         .content{
             max-width: 800px;
@@ -89,25 +86,18 @@
 
 <script type="text/javascript">
     $(document).ready(function(){
-        
-     var dataTable = $('#course_table').DataTable({
-        "paging":true,
-        "processing":true,
-        "serverSide":true,
-        "dom":'lrtip',
-        "order": [],
-        "info":true,
-        "ajax":{
-            url:"/getCourseList",
-            type:"post"
-        },
-        "columnDefs":[
-           {
-            "target":[0,3,4],
-            "orderable":false,
-           },
-        ],
-     });
+      $.ajax({
+                url:"/getCourseList",
+                data: new FormData( {start: 0, length : 10}) ,
+                method:'POST',
+                contentType:false,
+                processData:false,
+                success:function(data)
+                {
+                      
+                  
+                }
+            });
 
      $(document).on('submit', '#course_form', function(event){
         event.preventDefault();

@@ -42,8 +42,8 @@ class DatabaseConnector
         return $this->conn;
     }
   
-    public function closeConnection()
+    public function __destruct()
     {
-        $this->conn==null;
+        $this->conn=null;
     }
 }

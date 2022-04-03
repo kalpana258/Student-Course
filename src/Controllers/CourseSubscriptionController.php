@@ -13,6 +13,9 @@ class CourseSubscriptionController
     
     public function __construct()
     {
+           $this->student = new Student();
+           $this->mapp = new StudentCourseMapping();
+         $this->course = new Course();
     }
       /**
      * This method load form for course subscription
@@ -22,8 +25,8 @@ class CourseSubscriptionController
     public function loadForm()
     {
         try {
-            $studentDropdown = Student::get_total_all_records();
-            $courseDropdown = Course::get_total_all_records();
+            $studentDropdown = $this->student->get_total_all_records();
+            $courseDropdown = $this->course->get_total_all_records();
             $view = new Views('studentCourseMap/studentSubscription.php');
             $view->assign('studentdropdown', $studentDropdown);
             $view->assign('courseDropdown', $courseDropdown);
@@ -42,7 +45,7 @@ class CourseSubscriptionController
             if (isset($_POST) && !empty($_POST)) {
                 $requestData = $_POST;
 
-                  StudentCourseMapping::storeStudentCourseMapping($requestData);
+                 $this->mapp->storeStudentCourseMapping($requestData);
                   header('Location: /report');
             }
         } catch (CustomException $e) {
@@ -58,7 +61,7 @@ class CourseSubscriptionController
     {
       
         try {
-            $response = StudentCourseMapping::getStudentCourseMapping();
+            $response = $this->mapp->getStudentCourseMapping();
             $view = new Views('studentCourseMap/report.php');
             $view->assign('response', $response);
         } catch (CustomException $e) {

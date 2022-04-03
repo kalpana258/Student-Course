@@ -7,12 +7,14 @@ use src\core\Views;
 use src\core\CustomException;
 use src\core\Validator;
 
+
 class CourseController
 {
     
     public function __construct()
     {
          $this->validator = new Validator();
+         $this->course = new Course();
     }
     /**
      * This method load the view for course
@@ -59,7 +61,7 @@ class CourseController
                 $_POST['courseDetails'] = filter_var($_POST['courseName'], FILTER_SANITIZE_STRING);
                   $_POST['courseDetails']  = filter_var($_POST['courseDetails'], FILTER_SANITIZE_SPECIAL_CHARS);
             
-                $save = Course::add($_POST);
+                $save = $this->course->add($_POST);
                 if ($save) {
                      $view = new Views('course/index.php');
                     $view->assign('success', 'Data saved successfully.');
@@ -88,7 +90,7 @@ class CourseController
     public function list()
     {
         try {
-            $view = new Views('course/view.php');
+            $view = new Views('course/newView.php');
         } catch (CustomException $e) {
             echo   $e->customFunction();
         }
@@ -102,7 +104,7 @@ class CourseController
     {
         try {
             $id = $_POST['course_id'];
-            $res = Course::delete($id);
+            $res = $this->course->delete($id);
         } catch (CustomException $e) {
             echo   $e->customFunction();
         }
@@ -116,7 +118,7 @@ class CourseController
     {
         try {
             $id = $_POST['id'];
-            $res = Course::getById($id);
+            $res = $this->course->getById($id);
             echo json_encode($res);
         } catch (CustomException $e) {
             echo   $e->customFunction();
@@ -131,7 +133,7 @@ class CourseController
     {
         try {
             $data = $_POST;
-            Course::edit($data);
+           $this->course->edit($data);
             echo json_encode(["success"=>true]);
         } catch (CustomException $e) {
               echo json_encode(["success"=>false]);
@@ -145,7 +147,7 @@ class CourseController
     public function getList()
     {
         try {
-            $records = Course::get($_POST);
+            $records = $this->course->get($_POST);
             
             $data = array();
             $filtered_rows = count($records);
@@ -159,7 +161,7 @@ class CourseController
             $output = array(
             "draw"              =>  intval($_POST["draw"]),
             "recordsTotal"      =>  $filtered_rows,
-            "recordsFiltered"   =>   count(Course::get_total_all_records()),
+            "recordsFiltered"   =>   count($this->course->get_total_all_records()),
             "data"              =>  $data
             );
             echo json_encode($output);
