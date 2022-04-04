@@ -16,7 +16,7 @@ require realpath(__DIR__ . '/..')."/includes/header.php";
       <?php
      
       if(isset($errors)){ 
-          // var_dump($errors);
+     
           ?>
       <div class="alert alert-danger" role="alert">
  <?php 
