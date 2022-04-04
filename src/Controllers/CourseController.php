@@ -159,11 +159,13 @@ class CourseController
                 $data[] = $sub_array;
             }
             $output = array(
-            "draw"              =>  intval($_POST["draw"]),
-            "recordsTotal"      =>  $filtered_rows,
-            "recordsFiltered"   =>   count($this->course->get_total_all_records()),
+       //     "draw"              =>  intval($_POST["draw"]),
+         //   "recordsTotal"      =>  $filtered_rows,
+          //  "recordsFiltered"   =>   count($this->course->get_total_all_records()),
             "data"              =>  $data
             );
+            
+          //  var_dump($data);
             echo json_encode($output);
         } catch (CustomException $e) {
             echo   $e->customFunction();

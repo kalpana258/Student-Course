@@ -15,13 +15,15 @@ class Student extends Model
     {
         try {
               
-               $statement = $this->conn->prepare("UPDATE student SET fname = :fname, lname = :lname, dob = :dob,phone = :phone,updated_at=:updated_at WHERE id = :id");
+               $statement = $this->conn->prepare("UPDATE student SET fname = :fname, lname = :lname, dob = :dob,phone = :phone,:email=:email,country_code=:country_code,updated_at=:updated_at WHERE id = :id");
                $result = $statement->execute(
                    array(
                        ':fname'   =>  $data["fname"],
                        ':lname' =>  $data["lname"],
                        ':dob'       =>  $data["dob"],
                        ':phone'       =>  $data["phone"],
+                       ':country_code'       =>  $data["countryCode"],
+                       ':email'       =>  $data["email"],
                        ':updated_at'       =>  date('Y-m-d H:i:s'),
                         ':id'=> $data["student_id"]
                     )

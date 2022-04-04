@@ -42,35 +42,7 @@ class StudentRegistrationController
          $countryCodes = $helper->getCountryCodes();
          
          if (isset($_POST['submit'])) {
-          $this->validator->name('First Name')->value($_POST['fname'])
-               ->pattern([
-                   ['name'=>'alpha','value'=>'Alphabets',"msg"=>"Only Alphabets is allowed for First Name."],
-                   ['name'=>'required','value'=>'required'],
-                   ['name'=>'min','value'=>4,"msg"=>"Please enter minimum 4 chars for First Name."],
-                   ['name'=>'max','value'=>50, "msg"=>"Please enter minimum 4 chars for First Name."]
-                  ]);
-       
-          $this->validator->name('Last Name')->value($_POST['lname'])
-               ->pattern([
-                  ['name'=>'alpha','value'=>'Alphabets',"msg"=>"Only Alphabets is allowed for Last Name."],
-                   ['name'=>'required','value'=>'required'],
-                   ['name'=>'min','value'=>4,"msg"=>"Please enter minimum 4 chars for Last Name."],
-                   ['name'=>'max','value'=>50,"msg"=>"Maximum 50 chars are allowed for Last Name"],
-                  ]);
-          
-             $this->validator->name('Mobile Number')->value($_POST['contact_no'])
-               ->pattern([
-                   ['name'=>'mobile','value'=>'Mobile',"msg"=>"Please enter valid Mobile number."],
-                   ['name'=>'required','value'=>'required'],
-                   ['name'=>'min','value'=>10,"msg"=>"Please enter minimum 10 digits for Mobile No."],
-                   ['name'=>'max','value'=>10,"msg"=>"Maximum 10 digits are allowed for Mobile No."],
-                  ]);
-             $this->validator->name('Email')->value($_POST['email'])
-               ->pattern([
-                   ['name'=>'email','value'=>'Email'],
-                   ['name'=>'required','value'=>'required'],
-                  ]);
-             $this->validator->checkDate($_POST['dob']);
+             $this->validate($_POST);
              if(!empty($this->validator->getErrors())){
                     $view = new Views('studentReg/index.php');
                     $view->assign('errors',$this->validator->getErrors());
@@ -158,13 +130,54 @@ class StudentRegistrationController
     public function edit()
     {
         try {
-            $data = $_POST;
-            
-            $this->student->edit($data);
-            echo  json_encode(["success"=>true]);
+           // $data = $_POST;
+          //   if (isset($_POST['submit'])) {
+             $this->validate($_POST);
+             if(!empty($this->validator->getErrors())){
+                 echo  json_encode(["success"=>false,"message"=>""]);
+             }else{
+                  $_POST['fname'] = filter_var($_POST['fname'], FILTER_SANITIZE_STRING);
+                $_POST['lname'] = filter_var($_POST['lname'], FILTER_SANITIZE_STRING);
+                $_POST['email'] = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
+                      $this->student->edit($_POST);
+                       echo  json_encode(["success"=>true]);
+             }
+           
         } catch (CustomException $e) {
             echo  json_encode(["success"=>false,"message"=>"Database error occured while saving."]);
         }
+    }
+    
+    public function validate($requestData){
+         $this->validator->name('First Name')->value($requestData['fname'])
+               ->pattern([
+                   ['name'=>'alpha','value'=>'Alphabets',"msg"=>"Only Alphabets is allowed for First Name."],
+                   ['name'=>'required','value'=>'required'],
+                   ['name'=>'min','value'=>4,"msg"=>"Please enter minimum 4 chars for First Name."],
+                   ['name'=>'max','value'=>50, "msg"=>"Please enter minimum 4 chars for First Name."]
+                  ]);
+       
+          $this->validator->name('Last Name')->value($requestData['lname'])
+               ->pattern([
+                  ['name'=>'alpha','value'=>'Alphabets',"msg"=>"Only Alphabets is allowed for Last Name."],
+                   ['name'=>'required','value'=>'required'],
+                   ['name'=>'min','value'=>4,"msg"=>"Please enter minimum 4 chars for Last Name."],
+                   ['name'=>'max','value'=>50,"msg"=>"Maximum 50 chars are allowed for Last Name"],
+                  ]);
+          
+             $this->validator->name('Mobile Number')->value($requestData['contact_no'])
+               ->pattern([
+                   ['name'=>'mobile','value'=>'Mobile',"msg"=>"Please enter valid Mobile number."],
+                   ['name'=>'required','value'=>'required'],
+                   ['name'=>'min','value'=>10,"msg"=>"Please enter minimum 10 digits for Mobile No."],
+                   ['name'=>'max','value'=>10,"msg"=>"Maximum 10 digits are allowed for Mobile No."],
+                  ]);
+             $this->validator->name('Email')->value($requestData['email'])
+               ->pattern([
+                   ['name'=>'email','value'=>'Email'],
+                   ['name'=>'required','value'=>'required'],
+                  ]);
+             $this->validator->checkDate($requestData['dob']);
     }
     /**
      * This method get list of student

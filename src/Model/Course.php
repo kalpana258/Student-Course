@@ -44,9 +44,9 @@ class Course extends Model
     {
         try {
             $query ="SELECT * FROM course where is_delete=0";
-            if ($request["length"] != -1) {
-                $query .= ' LIMIT ' .$request['start']. ', ' .$request['length'];
-            }
+//            if ($request["length"] != -1) {
+//                $query .= ' LIMIT ' .$request['start']. ', ' .$request['length'];
+//            }
             $stmt = $this->conn->prepare($query);
             $stmt->execute();
             $response = $stmt->fetchAll(\PDO::FETCH_ASSOC);

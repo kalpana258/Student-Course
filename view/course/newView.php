@@ -40,6 +40,13 @@
 </nav>    
 <div class="content">
     <h1></h1>
+      <label class="control-label"  for="contact_no">Show</label>
+    <select name="vieSize" id="">
+        <option value="10"> <?php echo 10 ?></option>
+        <option value="20"> <?php echo 20 ?></option>
+        <option value="30"> <?php echo 30 ?></option>
+        <option value="40"> <?php echo 40 ?></option>
+          </select>
                <table id="course_table" class="table table-striped">
                     <thead bgcolor="#6cd8dc">
                         <tr class="table-primary">
@@ -88,15 +95,35 @@
     $(document).ready(function(){
       $.ajax({
                 url:"/getCourseList",
-                data: new FormData( {start: 0, length : 10}) ,
+              //  data: new FormData( {start: 0, length : 10}) ,
                 method:'POST',
                 contentType:false,
                 processData:false,
                 success:function(data)
                 {
-                      
+                    //alert(data.length);
+                    console.log($.parseJSON(data));
+                    data = $.parseJSON(data);
+                    responseData = data.data
+                   // alert(data.data.length);
+  for (var i=0; i<responseData.length; i++) {
+     // alert(responseData[i]);
+     var row = '<tr>';
+     for (var j=0; j<responseData[i].length; j++) {
+           console.log((responseData[i][j]));
+           row += '<td>' + responseData[i][j] + '</td>';
+     }
+   
+     row += '</tr>';
+    
+     $('#course_table').append(row);
+  }
+    },
+    error: function(jqXHR, textStatus, errorThrown){
+        alert('Error: ' + textStatus + ' - ' + errorThrown);
+    }
                   
-                }
+                
             });
 
      $(document).on('submit', '#course_form', function(event){
