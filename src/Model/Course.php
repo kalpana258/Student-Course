@@ -44,10 +44,10 @@ class Course extends Model
     {
         try {
             $query ="SELECT * FROM course where is_delete=0";
-//            if ($request["length"] != -1) {
-//                $query .= ' LIMIT ' .$request['start']. ', ' .$request['length'];
-//            }
-            $stmt = $this->conn->prepare($query);
+            if ($request["length"] != -1) {
+                $query .= ' LIMIT ' .$request['start']. ', ' .$request['length'];
+            }
+            $stmt = $this->query($query);
             $stmt->execute();
             $response = $stmt->fetchAll(\PDO::FETCH_ASSOC);
             return $response;
@@ -86,7 +86,7 @@ class Course extends Model
         }
     }
     
-    public  function add($data)
+    public static function add($data)
     {
         try {
            

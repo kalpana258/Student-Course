@@ -15,9 +15,9 @@ class Student extends Model
     {
         try {
               
-               $statement = $this->conn->prepare("UPDATE student SET fname = :fname, lname = :lname, dob = :dob,phone = :phone,:email=:email,country_code=:country_code,updated_at=:updated_at WHERE id = :id");
-               $result = $statement->execute(
-                   array(
+               $statement = $this->conn->prepare("UPDATE student SET _at WHERE id = :id");
+              
+               $bindArray=    array(
                        ':fname'   =>  $data["fname"],
                        ':lname' =>  $data["lname"],
                        ':dob'       =>  $data["dob"],
@@ -26,8 +26,10 @@ class Student extends Model
                        ':email'       =>  $data["email"],
                        ':updated_at'       =>  date('Y-m-d H:i:s'),
                         ':id'=> $data["student_id"]
-                    )
-               );
+                    );
+               $setClause = "fname = :fname, lname = :lname, dob = :dob,phone = :phone,:email=:email,country_code=:country_code,updated_at=:updated";
+               $whereClause = "id = :id";
+               $this->update("student",$setClause,$bindArray,$whereClause);
         } catch (\Exception $exception) {
             throw new CustomException($exception->getMessage());
         }
@@ -36,10 +38,16 @@ class Student extends Model
     public  function get_total_all_records()
     {
         try {
-            $statement = $this->conn->prepare("SELECT * FROM student where is_delete=0");
-            $statement->execute();
-            $result = $statement->fetchAll();
-            return $result;
+//            $statement = $this->conn->prepare("SELECT * FROM student where is_delete=0");
+//            $statement->execute();
+//            $result = $statement->fetchAll();
+//            return $result;
+//            
+              $whereClause= "is_delete=0";
+           // $stmt->execute();
+               $response =$this->readAll('student', $whereClause,[]);
+            $response = $response->fetchAll();
+            return $response;
         } catch (\Exception $exception) {
             throw new CustomException($exception->getMessage());
         }
@@ -47,13 +55,15 @@ class Student extends Model
     public  function get($request)
     {
         try {
-            $query ="SELECT * FROM student where is_delete=0";
-            if ($request["length"] != -1) {
-                $query .= ' LIMIT ' .$request['start']. ', ' .$request['length'];
-            }
-            $stmt =  $this->conn->query($query);
-            $stmt->execute();
-            $response = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+//            $query ="SELECT * FROM student where is_delete=0";
+//            if ($request["length"] != -1) {
+//                $query .= ' LIMIT ' .$request['start']. ', ' .$request['length'];
+//            }
+//            $stmt =  $this->conn->query($query);
+           $whereClause= "is_delete=0";
+           // $stmt->execute();
+               $response =$this->readAll('student', $whereClause,$request);
+            $response = $response->fetchAll(\PDO::FETCH_ASSOC);
             return $response;
         } catch (\Exception $exception) {
             throw new CustomException($exception->getMessage());
@@ -62,32 +72,31 @@ class Student extends Model
     public  function getByID($id)
     {
         try {
-         
-            $stmt = $this->conn->prepare("SELECT * FROM student WHERE id =:id AND is_delete=0 LIMIT 1");
-            $stmt->execute(
-                array(
+             $whereClause = "id =:id AND is_delete=0";
+             $bindArray = array(
                 ':id'       =>  $id
-                )
-            );
-            $response = $stmt->fetch(\PDO::FETCH_ASSOC);
-
+                );
+         
+            $response =$this->readById('student',$bindArray, $whereClause,true);
+              $response = $response->fetch(\PDO::FETCH_ASSOC);
             return $response;
         } catch (\Exception $exception) {
             throw new CustomException($exception->getMessage());
         }
     }
-    public  function delete($id)
+    public  function deleteRecord($id)
     {
         try {
            
-            $statement = $this->conn->prepare("UPDATE student SET is_delete = :delete WHERE id = :id");
-            $result = $statement->execute(
-                array(
+             $bindArray =   array(
                 ':delete'   =>  1,
                 ':id'       =>  $id
-                )
-            );
+                );
+             $setClause = "is_delete = :delete";
+             $whereClause = "id = :id";
+             $this->delete('student', $setClause, $bindArray, $whereClause);
         } catch (\Exception $exception) {
+            var_dump($exception);
              throw new CustomException($exception->getMessage());
         }
     }
@@ -96,18 +105,22 @@ class Student extends Model
     {
         try {
             $stuRegNo = str_pad(mt_rand(1,999999),6,'0',STR_PAD_LEFT);
-            $stmt = $this->conn->prepare("INSERT INTO student(`fname`, `lname`,`reg_no`, `dob`,`phone`,`email`,`country_code`,`created_at`,`updated_at`) VALUES(:fname,:lname,:regno,:dob,:phone,:email,:country_code,:created_at,:updated_at)");
-            $stmt->bindValue(':fname', $data['fname']??null);
-            $stmt->bindValue(':lname', $data['lname']??null);
-            $stmt->bindValue(':regno', $stuRegNo??null);
-            $stmt->bindValue(':email', $data['email']??null);
-            $stmt->bindValue(':dob', date("Y-m-d", strtotime($data['dob']))??null);
-            $stmt->bindValue(':phone', $data['contact_no']??null);
-            $stmt->bindValue(':country_code', $data['countryCode']??null);
-        //    $stmt->bindValue(':is_delete', 0);
-            $stmt->bindValue(':created_at', date('Y-m-d H:i:s'));
-            $stmt->bindValue(':updated_at', date('Y-m-d H:i:s'));
-            $stmt->execute();
+            $bindArray = array(
+                       ':fname'   =>  $data["fname"],
+                       ':lname' =>  $data["lname"],
+                       ':regno'       =>  $stuRegNo,
+                       ':dob'       =>  date("Y-m-d", strtotime($data['dob'])),
+                       ':phone'       =>  $data["contact_no"],
+                       ':country_code'       =>  $data["countryCode"],
+                       ':email'       =>  $data["email"],
+                       ':created_at'       =>  date('Y-m-d H:i:s'),
+                       ':updated_at'       =>  date('Y-m-d H:i:s'),
+                       
+                    );
+                $fieldList = '`fname`, `lname`,`reg_no`, `dob`,`phone`,`email`,`country_code`,`created_at`,`updated_at`';  
+               $valueList =  ":fname,:lname,:regno,:dob,:phone,:email,:country_code,:created_at,:updated_at";
+                $this->insert('student',$fieldList,$bindArray,$valueList);
+      
             return true;
         } catch (\Exception $exception) {
             

@@ -87,7 +87,7 @@
                 
                     
                       <label>Contact No</label>
-                    <input type="text" name="phone" id="phone" class="form-control"
+                    <input type="text" name="contact_no" id="contact_no" class="form-control"
                            
                            autocomplete="off"  max="10" pattern="^[6-9]\d{9}$" /><br>
                 </div>
@@ -128,7 +128,7 @@
         var fname = $('#fname').val();
         var lname = $('#lname').val();
          var dob = $('#dob').val();
-          var phone = $('#phone').val();
+          var phone = $('#contact_no').val();
 
         if(fname != '' && lname != '')
         {

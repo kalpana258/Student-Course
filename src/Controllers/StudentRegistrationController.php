@@ -102,7 +102,7 @@ class StudentRegistrationController
     {
         try {
             $id = $_POST['student_id'];
-            $res = $this->student->delete($id);
+            $res = $this->student->deleteRecord($id);
         } catch (CustomException $e) {
             echo   $e->customFunction();
         }
@@ -132,6 +132,7 @@ class StudentRegistrationController
         try {
            // $data = $_POST;
           //   if (isset($_POST['submit'])) {
+         //   var_dump($_POST);
              $this->validate($_POST);
              if(!empty($this->validator->getErrors())){
                  echo  json_encode(["success"=>false,"message"=>""]);
