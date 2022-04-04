@@ -36,8 +36,7 @@ class CourseController
      */
     public function createCourse()
     {
-        try {
-//        
+        try {      
          
          if (isset($_POST['submit'])) {
           $this->validator->name('Course Name')->value($_POST['courseName'])
@@ -90,7 +89,10 @@ class CourseController
     public function list()
     {
         try {
-            $view = new Views('course/view.php');
+            $view = new Views('course/newView.php');
+            $view->assign('pageno',0);
+            $total_pages=  count($this->course->get_total_all_records());
+            $view->assign('total_pages',$total_pages);
         } catch (CustomException $e) {
             echo   $e->customFunction();
         }
@@ -146,23 +148,34 @@ class CourseController
      */
     public function getList()
     {
+      
         try {
+            
             $records = $this->course->get($_POST);
             
             $data = array();
-            $filtered_rows = count($records);
-            foreach ($records as $row) {
-                $sub_array = array();
-                $sub_array[] = '<button type="button" name="update" id="'.$row["id"].'" class="btn btn-primary btn-sm update">Edit</button>';
-                $sub_array[] = $row["name"];
-                $sub_array[] = '<button type="button" name="delete" id="'.$row["id"].'" class="btn btn-danger btn-sm delete">Delete</button>';
-                $data[] = $sub_array;
+            // $filtered_rows = count($records);
+            // foreach ($records as $row) {
+            //     $sub_array = array();
+            //     // $sub_array[] = '<button type="button" name="update" id="'.$row["id"].'" class="btn btn-primary btn-sm update">Edit</button>';
+            //     $sub_array[] = $row["name"];
+            //     // $sub_array[] = '<button type="button" name="delete" id="'.$row["id"].'" class="btn btn-danger btn-sm delete">Delete</button>';
+            //     $data[] = $sub_array;
+            // }
+            if(isset($_POST['but_prev']) && $_POST['but_prev']==1){
+                $row = abs(intval($_POST["num_rows"]-$_POST["row"]));
+            }else{
+            if(isset($_POST['but_next']) && $_POST['but_next']==1 ||
+                   isset($_POST['row']) ){
+                $row = intval($_POST["num_rows"]+$_POST["row"]);
             }
+            }
+              
             $output = array(
-       //     "draw"              =>  intval($_POST["draw"]),
-         //   "recordsTotal"      =>  $filtered_rows,
-          //  "recordsFiltered"   =>   count($this->course->get_total_all_records()),
-            "data"              =>  $data
+    
+           "recordsFiltered"   =>   count($this->course->get_total_all_records()),
+            'row'=> isset($row)?$row:0,
+            "data"              =>  $records
             );
             
           //  var_dump($data);

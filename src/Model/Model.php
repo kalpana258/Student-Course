@@ -50,13 +50,43 @@ class Model{
      
       public  function readAll($tablename,$whereClause,$request)
      {
-         $query = "SELECT * FROM ".$tablename." WHERE ".$whereClause."";
-                           if (isset($request["length"]) && $request["length"] != -1) {
-                $query .= ' LIMIT ' .$request['start']. ', ' .$request['length'];
+           $row = 0;
+//        $rowperpage = 2;
+//        
+            if(isset($request['num_rows'])){
+                $rowperpage = $request['num_rows'];
             }
+            // Previous Button
+            if(isset($request['but_prev'])){
+                $row = $request['row'];
+                $row -= $rowperpage;
+                if( $row < 0 ){
+                    $row = 0;
+                }
+            }
+             // Next Button
+            if(isset($request['but_next'])){
+                $row = $request['row'];
+                $allcount = $request['allcount'];
+
+                $val = $row + $rowperpage;
+                if( $val < $allcount ){
+                    $row = $val;
+                }
+            }
+            
+
+         $query = "SELECT * FROM ".$tablename." WHERE ".$whereClause."";
+                    if(!empty($request)){  
+                        
+                $query .= ' LIMIT ' .$row. ', ' .$rowperpage;
+                    }
+
+                
            
            $stmt = $this->conn->prepare($query);
-            $stmt->execute();
+           $stmt->execute();
+           
          return $stmt;
      }
 }
