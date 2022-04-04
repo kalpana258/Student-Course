@@ -15,7 +15,7 @@ class Student extends Model
     {
         try {
               
-               $statement = $this->conn->prepare("UPDATE student SET _at WHERE id = :id");
+              // $statement = $this->conn->prepare("UPDATE student SET _at WHERE id = :id");
               
                $bindArray=    array(
                        ':fname'   =>  $data["fname"],

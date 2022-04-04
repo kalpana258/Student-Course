@@ -43,7 +43,7 @@ class CourseController
           $this->validator->name('Course Name')->value($_POST['courseName'])
                ->pattern([
                    ['name'=>'required','value'=>'required'],
-                  // ['name'=>'alphanumeric','value'=>'','msg'=>"Course Name may only contain alphanumeric characters."],
+             
                   ]);
        
           $this->validator->name('Course Details')->value($_POST['courseDetails'])
@@ -90,7 +90,7 @@ class CourseController
     public function list()
     {
         try {
-            $view = new Views('course/newView.php');
+            $view = new Views('course/view.php');
         } catch (CustomException $e) {
             echo   $e->customFunction();
         }
@@ -104,7 +104,7 @@ class CourseController
     {
         try {
             $id = $_POST['course_id'];
-            $res = $this->course->delete($id);
+            $res = $this->course->deleteRecord($id);
         } catch (CustomException $e) {
             echo   $e->customFunction();
         }

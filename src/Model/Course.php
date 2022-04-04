@@ -13,15 +13,15 @@ class Course extends Model
     public  function edit($data)
     {
         try {
-            $statement = $this->conn->prepare("UPDATE course SET name = :name, details = :details,updated_at=:updated_at WHERE id = :id");
-            $result = $statement->execute(
-                array(
+            $setClause ="name = :name, details =:details,updated_at=:updated";
+             $whereClause = "id=:id";
+             $bindingArray = array(
+                ':id'=> (int)$data["course_id"],
                 ':name'   =>  $data["course_name"],
                 ':details' =>  $data["course_details"],
-                ':updated_at'       =>  date('Y-m-d H:i:s'),
-                ':id'=> $data["course_id"]
-                )
-            );
+                ':updated' =>  date('Y-m-d H:i:s')
+                );
+           $this->update('course', $setClause, $bindingArray, $whereClause);
         } catch (\Exception $exception) {
             throw new CustomException($exception->getMessage());
         }
@@ -31,11 +31,10 @@ class Course extends Model
     {
         try {
           
-       
-            $statement = $this->conn ->prepare("SELECT * FROM course where is_delete=0");
-            $statement->execute();
-            $result = $statement->fetchAll();
-            return $result;
+            $whereClause = "is_delete=0";
+            $result = $this->readAll("course", $whereClause, []);
+            $response = $result->fetchAll();
+            return $response;
         } catch (\Exception $exception) {
             throw new CustomException($exception->getMessage());
         }
@@ -43,13 +42,9 @@ class Course extends Model
     public  function get($request)
     {
         try {
-            $query ="SELECT * FROM course where is_delete=0";
-            if ($request["length"] != -1) {
-                $query .= ' LIMIT ' .$request['start']. ', ' .$request['length'];
-            }
-            $stmt = $this->query($query);
-            $stmt->execute();
-            $response = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            $whereClause = "is_delete=0";
+            $result = $this->readAll("course", $whereClause, $request);
+            $response = $result->fetchAll(\PDO::FETCH_ASSOC);
             return $response;
         } catch (\Exception $exception) {
             throw new CustomException($exception->getMessage());
@@ -58,47 +53,50 @@ class Course extends Model
     public  function getByID($id)
     {
         try {
-            $stmt = $this->conn->prepare("SELECT * FROM course WHERE id =:id AND is_delete=0 LIMIT 1");
-            $stmt->execute(
-                array(
+          
+            $bindArray= array(
                 ':id'       =>  $id
-                )
-            );
-            $response = $stmt->fetch(\PDO::FETCH_ASSOC);
+                );
+            $whereClause= "id =:id AND is_delete=0";
+            $result = $this->readById("course", $bindArray, $whereClause);
+            $response = $result->fetch(\PDO::FETCH_ASSOC);
 
             return $response;
         } catch (\Exception $exception) {
             throw new CustomException($exception->getMessage());
         }
     }
-    public  function delete($id)
+    public  function deleteRecord($id)
     {
         try {
-            $statement = $this->conn->prepare("UPDATE course SET is_delete = :delete WHERE id = :id");
-            $result = $statement->execute(
-                array(
+          
+            $setClause = "is_delete = :delete";
+            $whereClause = "id = :id";
+            $bindArray=  array(
                 ':delete'   =>  1,
                 ':id'       =>  $id
-                )
-            );
+                );
+            $this->delete("course", $setClause, $bindArray, $whereClause);
         } catch (\Exception $exception) {
              throw new CustomException($exception->getMessage());
         }
     }
     
-    public static function add($data)
+    public function add($data)
     {
         try {
            
-            $courseCode =str_pad(mt_rand(1,999),3,'0',STR_PAD_LEFT);
-            $stmt = $this->conn->prepare("INSERT INTO course(`name`,`course_code`, `details`, `created_at`,`updated_at`) VALUES(:name,:coursecode,:details,:created_at,:updated_at)");
-            $stmt->bindValue(':name', $data['courseName']??null);
-            $stmt->bindValue(':details', $data['courseDetails']??null);
-            $stmt->bindValue(':coursecode',$courseCode);
- 
-            $stmt->bindValue(':created_at', date('Y-m-d H:i:s'));
-            $stmt->bindValue(':updated_at', date('Y-m-d H:i:s'));
-            $stmt->execute();
+            $courseCode = str_pad(mt_rand(1,999),3,'0',STR_PAD_LEFT);
+            $fieldList = "`name`,`course_code`, `details`, `created_at`,`updated_at`";
+            $mapList = ":name,:coursecode,:details,:created_at,:updated_at";
+            $bindArray= [
+                ':name'=> $data['courseName'],
+                ':details'=> $data['courseDetails'],
+                ':coursecode'=> $courseCode,
+                ':created_at'=>  date('Y-m-d H:i:s'),
+                ':updated_at'=>  date('Y-m-d H:i:s'),
+            ];
+            $this->insert("course", $fieldList, $bindArray, $mapList);
             return true;
         } catch (\Exception $exception) {
              throw new CustomException($exception->getMessage());

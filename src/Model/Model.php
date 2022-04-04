@@ -22,7 +22,7 @@ class Model{
     
     
      public function update($tableName,$setClause,$bindArray,$whereClause){
-        $stmt = $this->conn->prepare("UPDATE ".$tableName." SET fname = ".$setClause." WHERE id = ".$whereClause."");
+        $stmt = $this->conn->prepare("UPDATE ".$tableName." SET ".$setClause." WHERE ".$whereClause."");
        foreach($bindArray as $key=>$bindParams){
              $stmt->bindValue($key,$bindParams);
         }
@@ -39,7 +39,7 @@ class Model{
            
     }
     
-     public  function readById($tablename,$bindArray,$whereClause,$byId)
+     public  function readById($tablename,$bindArray,$whereClause)
      {
          $query = "SELECT * FROM ".$tablename." WHERE ".$whereClause." LIMIT 1";
          
